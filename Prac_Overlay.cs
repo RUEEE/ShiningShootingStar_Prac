@@ -165,6 +165,17 @@ namespace SSS_Prac_Launcher
             // dinput
             PatchInput.actions_input_patch += () => {
                 if (wait_time_overlay >= 10 &&  PatchInput.key_state!=null && PatchInput.key_state.IsPressed(SlimDX.DirectInput.Key.Backspace)){
+                    if (PatchMainWind.main_panel != null)
+                    {
+                        x_overlay = (int)((float)PatchMainWind.main_panel.Width*0.75f);
+                        y_overlay = (int)((float)PatchMainWind.main_panel.Height*0.6f);
+                    }
+                    else
+                    {
+                        x_overlay = (int)((float)PatchMainWind.main_form.Width*0.75f);
+                        y_overlay = (int)((float)PatchMainWind.main_form.Height*0.6f);
+                    }
+                    overlay_panel.Location = new Point(x_overlay, y_overlay);
                     wait_time_overlay = 0;
                     overlay_panel.Visible  = !overlay_panel.Visible;
                 }

@@ -59,6 +59,33 @@ namespace SSS_Prac_Launcher
         public static List<Control> objs_selection = new List<Control>();
         public static int cur_selected_option = 0;
 
+        public static bool is_opened = false;
+
+        public static void ShowCursor()
+        {
+            Shooting.MouseCtrl.DrawCursor(true);
+        }
+        public static void HideCursor()
+        {
+            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.Game_Main"));
+            FieldInfo fw = null;
+            foreach (var field in type)
+            {
+                if (field.Name == "fullWindow")
+                {
+                    fw = field;
+                    break;
+                }
+            }
+            if((bool)fw.GetValue(Launcher.game_Main))
+            {
+                Shooting.MouseCtrl.DrawCursor(false);
+            }
+            else
+            {
+                Shooting.MouseCtrl.DrawCursor(true);
+            }
+        }
         public static void SelectionPanelOpen()
         {
             if (!IsSelectionPanelOpen())
@@ -77,7 +104,10 @@ namespace SSS_Prac_Launcher
             key_wait_time = 0;
             cur_selected_option = 0;
             UpdateSelectedOption();
+            ShowCursor();
+            is_opened = true;
         }
+
         public static void SelectionPanelClose()
         {
             if (IsSelectionPanelOpen())
@@ -96,15 +126,18 @@ namespace SSS_Prac_Launcher
                 }
             }
             key_wait_time = 0;
+            HideCursor();
+            is_opened = false;
         }
 
         public static bool IsSelectionPanelOpen()
         {
-            if (PatchMainWind.main_panel!=null)
-            {
-                return PatchMainWind.main_panel.Controls.Contains(selection_panel);
-            }
-            return PatchMainWind.main_form.Controls.Contains(selection_panel);
+            return is_opened;
+            // if (PatchMainWind.main_panel!=null)
+            // {
+            //     return PatchMainWind.main_panel.Controls.Contains(selection_panel);
+            // }
+            // return PatchMainWind.main_form.Controls.Contains(selection_panel);
         }
 
         public struct RoadJump
@@ -201,6 +234,28 @@ namespace SSS_Prac_Launcher
             nb.Maximum = max;
             nb.Value = numdefault;
             nb.InterceptArrowKeys = false;
+            // nb.KeyDown += (o, e) =>
+            // {
+            //     if (((int)e.KeyData>='0' && (int)e.KeyData<='9') || e.KeyData == Keys.Back || e.KeyData==Keys.Right || e.KeyData==Keys.Left)
+            //         e.Handled = false;
+            //     else
+            //         e.Handled = true;
+            // };
+            // nb.KeyUp += (o, e) =>
+            // {
+            //     if (((int)e.KeyData>='0' && (int)e.KeyData<='9') || e.KeyData == Keys.Back || e.KeyData==Keys.Right || e.KeyData==Keys.Left)
+            //         e.Handled = false;
+            //     else
+            //         e.Handled = true;
+            // };
+            // nb.KeyPress += (o, e) =>
+            // {
+            //     if (e.KeyChar>='0' && e.KeyChar<='9')
+            //         e.Handled=false;
+            //     else
+            //         e.Handled=true;
+            //     return;
+            // };
             return nb;
         }
         public static Button GetDefaultBtn(string text)
@@ -290,7 +345,7 @@ namespace SSS_Prac_Launcher
                     e.Handled = false;
                 else
                 {
-                    if (e.KeyData==Keys.Z && objs_selection[cur_selected_option] is Button)
+                    if (e.KeyData == Keys.Z && objs_selection[cur_selected_option] is Button)
                         e.Handled = false;
                     else
                         e.Handled = true;
@@ -302,7 +357,7 @@ namespace SSS_Prac_Launcher
                     e.Handled = false;
                 else
                 {
-                    if (e.KeyData==Keys.Z && objs_selection[cur_selected_option] is Button)
+                    if (e.KeyData == Keys.Z && objs_selection[cur_selected_option] is Button)
                         e.Handled = false;
                     else
                         e.Handled = true;

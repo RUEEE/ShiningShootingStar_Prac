@@ -35,7 +35,7 @@ namespace SSS_Prac_Launcher
             // }
             // Assembly assembly = Assembly.LoadFile(@"C:\disk\touhou\2nd\SSS\SSS\THSSS.exe");
 
-            // Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
+             //Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
 
             {
                 bool flag;
