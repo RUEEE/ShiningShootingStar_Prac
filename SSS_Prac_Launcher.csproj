@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputPatch.cs" />
     <Compile Include="PracSelection.cs" />
     <Compile Include="Prac_Overlay.cs" />
     <Compile Include="Prac_Overlay_old.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Stage4Patch.cs" />
     <Compile Include="Stage5Patch.cs" />
     <Compile Include="Stage6Patch.cs" />
+    <Compile Include="Stage7Patch.cs" />
     <Compile Include="StagePatch.cs" />
   </ItemGroup>
   <ItemGroup>

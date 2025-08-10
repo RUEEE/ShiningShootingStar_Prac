@@ -22,60 +22,21 @@ namespace SSS_Prac_Launcher
 {
     public class Launcher
     {
+        public static Game_Main game_Main;
         static void Main(string[] args)
         {
-            // Assembly assembly = Assembly.LoadFile(@"C:\disk\touhou\2nd\SSS\SSS\THSSS.exe");
-            // // Installing the Prefix patch for method "int Example.Program.Sum(int, int)"
-            // // The targeted method resides in a runtime type - loaded Assembly
-            // // We can use the Harmony AccessTools as a shortcut for reflection
-            // 
-            // MethodInfo target = AccessTools.Method("Shooting.BaseMyPlane:Miss");
-            // if (target == null)
-            //     throw new Exception("Could not resolve Example.Program.Sum");
-            // Harmony harmony = new Harmony("Hook");
-            // MethodInfo patch = typeof(Hook).GetMethod("Miss_changed");
-            // harmony.Patch(target, prefix: new HarmonyMethod(patch));
-            // //harmony.PatchAll(assembly);
-            // //Executing the targeted application
-            // 
-            // 
-            // Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
-            // assembly.EntryPoint.Invoke(null, null);
-
-
-            // Assembly assembly = Assembly.LoadFile(@"C:\disk\touhou\2nd\SSS\SSS\THSSS.exe");
-
-
-
-            // Installing the Prefix patch for method "int Example.Program.Sum(int, int)"
-            // The targeted method resides in a runtime type - loaded Assembly
-            // We can use the Harmony AccessTools as a shortcut for reflection
-
             Harmony harmony = new Harmony("Hooks");
             harmony.PatchAll();
 
-            // var a = AccessTools.Method("Shooting.BaseMyPlane:Miss");
-            // harmony.Patch(AccessTools.Method("Shooting.BaseMyPlane:Miss"), 
-            //     prefix: new HarmonyMethod(typeof(OverlayPatches).GetMethod("BaseMyPlane_Miss_Invincable_Prefix")));
-            // 
-            // 
-            // harmony.Patch(AccessTools.Method("Shooting.Game_Main:MainProcess"),
-            //     postfix: new HarmonyMethod(typeof(OverlayPatches).GetMethod("IGameState_Render_Overlay_Postfix", new Type[]{ typeof(Shooting.Game_Main )})));
-
-            // var tp = AccessTools.TypeByName("GameState_MainMenu");
-            // var mth =  AccessTools.Method(tp, "Render");
-            // harmony.Patch(mth,
-            //     postfix: new HarmonyMethod(typeof(OverlayPatches).GetMethod("IGameState_Render_Overlay_Postfix")));
-            // AccessTools.TypeByName("GameState_MainMenu");
-
-            var x = harmony.GetPatchedMethods();
-            foreach (var i in x)
-            {
-                Console.WriteLine(i.Name);  
-            }
-
+            // var x = harmony.GetPatchedMethods();
+            // foreach (var i in x)
+            // {
+            //     Console.WriteLine(i.Name);  
+            // }
             // Assembly assembly = Assembly.LoadFile(@"C:\disk\touhou\2nd\SSS\SSS\THSSS.exe");
-            Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
+
+            // Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
+
             {
                 bool flag;
                 new Mutex(false, "AA", out flag);
@@ -83,7 +44,7 @@ namespace SSS_Prac_Launcher
                 {
                     System.Windows.Forms.Application.EnableVisualStyles();
                     System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-                    Game_Main game_Main = new Game_Main();
+                    game_Main = new Game_Main();
                     if (game_Main.initSuccess)
                     {
                         MessagePump.Run(game_Main.Form_Main, new MainLoop(game_Main.MainProcess));
@@ -95,10 +56,6 @@ namespace SSS_Prac_Launcher
                     MessageBox.Show("东方白丝祭(误)已启动，\r\n程序不允许双开。", "程序已启动");
                 }
             }
-            
-            // Assembly asm = Assembly.GetEntryAssembly();
-            // asm.EntryPoint.Invoke(null, null);
-            // assembly.EntryPoint.Invoke(null, null);
         }
         
     }
@@ -110,6 +67,7 @@ namespace SSS_Prac_Launcher
         public static Form main_form;
         public static System.Drawing.Font form_font_italian;
         public static System.Drawing.Font form_font_regular;
+        public static System.Drawing.Font form_font_bold_u;
         public static MethodBase TargetMethod()
         {
             return AccessTools.Method("Shooting.Game_Main:Direct3DInit");
@@ -134,24 +92,10 @@ namespace SSS_Prac_Launcher
             int fontsize = (int)(main_form.Font.Size*1.5);
             form_font_regular = new System.Drawing.Font(main_form.Font.Name, fontsize, FontStyle.Regular);
             form_font_italian = new System.Drawing.Font(main_form.Font.Name, fontsize, FontStyle.Italic);
+            form_font_bold_u = new System.Drawing.Font(main_form.Font.Name, fontsize,  FontStyle.Underline | FontStyle.Bold);
 
             Prac_Hotkey.Init();
             PracSelection.Init();
-        }
-    }
-
-    [HarmonyPatch]
-    public class PatchKeyDown
-    {
-        public static KeyboardState key_state;
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Shooting.KeyboardCapture), "UpdateInput")]
-        public static void KeyboardCapture_UpdateInput_Postfix(Shooting.KeyboardCapture __instance)
-        {
-            if (__instance==null || __instance.currentKeyboardState==null)
-                return;
-            key_state = __instance.currentKeyboardState;
-            return;
         }
     }
 

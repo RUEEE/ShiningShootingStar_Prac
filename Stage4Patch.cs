@@ -45,7 +45,7 @@ namespace SSS_Prac_Launcher
                 return;
             if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            if (PracSelection.comboBox_subStage_sel.SelectedIndex != 7)//not FSC
+            if (PracSelection.comboBox_subStage_sel.SelectedIndex != PracSelection.n_FSC[3])//not FSC
                 return;
             StagePatch.BossJump_FSC(__instance);
         }
@@ -79,12 +79,30 @@ namespace SSS_Prac_Launcher
 
         public static void Postfix(IGameState __instance)
         {
+            StagePatch.RecordTimes(__instance);
+
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
+
+            var p_timeMain = StagePatch.GetTimeMain(__instance);
+            if (p_timeMain == null)
                 return;
-            //8400
-            StagePatch.BeginBoss(__instance, 8850, 8700, () => { __instance.StageData.ChangeBGM(".\\BGM\\Boss04.wav", 0, 0, 255, 463491, 7541982); });
+            StagePatch.RecordTimes(__instance, p_timeMain);
+
+            PracSelection.SelectedType type = (PracSelection.SelectedType)PracSelection.comboBox_type_sel.SelectedIndex;
+            switch (type)
+            {
+                case PracSelection.SelectedType.Boss:
+                    StagePatch.SetFSC_EnhanceCount(__instance, p_timeMain);
+                    StagePatch.BeginBoss(__instance, p_timeMain, 8850, 8700, () => { __instance.StageData.ChangeBGM(".\\BGM\\Boss04.wav", 0, 0, 255, 463491, 7541982); });
+                    break;
+                case PracSelection.SelectedType.Road:
+                    StagePatch.RoadJump(__instance, p_timeMain);
+                    break;
+                default:
+                    break;
+            }
+            
         }
     }
 

@@ -32,6 +32,29 @@ namespace SSS_Prac_Launcher
         }
     }
 
+
+    [HarmonyPatch]
+    class PatchStage3MidBoss
+    {
+        public static MethodBase TargetMethod()
+        {
+            return (MethodBase)(AccessTools.TypeByName("Shooting.Boss_Koreirei01").GetMember(".ctor", AccessTools.all)[0]);
+        }
+        // { "card 1", "card 2"}
+        public static void Postfix(BaseBoss __instance)
+        {
+            if (!PracSelection.is_Prac)
+                return;
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.MidBoss)
+                return;
+            var lifes = new int[] { 2, 1 };
+            var set_life = new int[] { 0, 0 };
+            var onspells = new int[] { 1, 1 };
+            __instance.OriginalPosition = __instance.DestPoint;
+            StagePatch.BossJump(__instance, lifes, set_life, onspells, StagePatch.NO_FSC);
+        }
+    }
+
     [HarmonyPatch]
     class PatchFSC3
     {
@@ -45,13 +68,11 @@ namespace SSS_Prac_Launcher
                 return;
             if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            if (PracSelection.comboBox_subStage_sel.SelectedIndex != 6)//not FSC
+            if (PracSelection.comboBox_subStage_sel.SelectedIndex != PracSelection.n_FSC[2])//not FSC
                 return;
             StagePatch.BossJump_FSC(__instance);
         }
     }
-
-
 
     [HarmonyPatch]
     class PatchStage3StoryA
@@ -128,12 +149,33 @@ namespace SSS_Prac_Launcher
 
         public static void Postfix(IGameState __instance)
         {
+            StagePatch.RecordTimes(__instance);
+
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
+
+            var p_timeMain = StagePatch.GetTimeMain(__instance);
+            if (p_timeMain == null)
                 return;
-            //8400
-            StagePatch.BeginBoss(__instance, 7300, 7150, () => { __instance.StageData.ChangeBGM(".\\BGM\\Boss03.wav", 0, 0, 255, 1286397, 6275430); });
+            StagePatch.RecordTimes(__instance, p_timeMain);
+
+            PracSelection.SelectedType type = (PracSelection.SelectedType)PracSelection.comboBox_type_sel.SelectedIndex;
+            switch (type)
+            {
+                case PracSelection.SelectedType.MidBoss:
+                    StagePatch.BeginMidBoss(__instance, p_timeMain, 3360);
+                    break;
+                case PracSelection.SelectedType.Boss:
+                    StagePatch.SetFSC_EnhanceCount(__instance, p_timeMain);
+                    StagePatch.BeginBoss(__instance, p_timeMain, 7300, 7150, () => { __instance.StageData.ChangeBGM(".\\BGM\\Boss03.wav", 0, 0, 255, 1286397, 6275430); });
+                    break;
+                case PracSelection.SelectedType.Road:
+                    StagePatch.RoadJump(__instance, p_timeMain);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 
