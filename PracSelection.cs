@@ -13,6 +13,9 @@ namespace SSS_Prac_Launcher
 {
     public class PracSelection
     {
+        public enum SelectedType {
+            Road = 0,Boss=1
+        }
         public static bool is_Prac = false;
 
         public static TableLayoutPanel selection_panel;
@@ -26,6 +29,17 @@ namespace SSS_Prac_Launcher
         static Type type_MenuGroup_PlayerSelect = AccessTools.TypeByName("Shooting.MenuGroup_PlayerSelect");
 
         public static int tab_id = 0;
+
+        public static void ComboSetItems(ComboBox cb, string[] items)
+        {
+            int id = cb.SelectedIndex;
+            cb.Items.Clear();
+            cb.Items.AddRange(items);
+            if(id < items.Length)
+                cb.SelectedIndex = id;
+            else
+                cb.SelectedIndex = 0;
+        }
         public static Label GetDefaultLabel(string text)
         {
             
@@ -36,10 +50,10 @@ namespace SSS_Prac_Launcher
             lb.BackColor = Color.Transparent;
             return lb;
         }
-        public static ComboBox GetDefaultCombobox(object[] items)
+        public static ComboBox GetDefaultCombobox(string[] items)
         {
             ComboBox combo = new ComboBox();
-            combo.Items.AddRange(items);
+            ComboSetItems(combo, items);
             combo.SelectedIndex = 0;
             combo.TabIndex = tab_id;
             tab_id++;
@@ -73,7 +87,7 @@ namespace SSS_Prac_Launcher
 
             int row = 0;
             {
-                ComboBox combo = GetDefaultCombobox(new Object[] { "1", "2", "3", "4", "5", "6", "ex" });
+                ComboBox combo = GetDefaultCombobox(new string[] { "1", "2", "3", "4", "5", "6", "ex" });
                 combo.SelectedIndexChanged += ComboChange_Stage_Type;
 
                 selection_panel.Controls.Add(GetDefaultLabel("Stage"), 0, row);
@@ -82,7 +96,7 @@ namespace SSS_Prac_Launcher
                 row++;
             }
             {
-                ComboBox combo = GetDefaultCombobox(new Object[] { "Road", "Boss" });
+                ComboBox combo = GetDefaultCombobox(new string[] { "Road", "Boss" });
                 combo.SelectedIndexChanged += ComboChange_Stage_Type;
 
                 selection_panel.Controls.Add(GetDefaultLabel("Type"), 0, row);
@@ -91,7 +105,7 @@ namespace SSS_Prac_Launcher
                 row++;
             }
             {
-                ComboBox combo = GetDefaultCombobox(new Object[] { " " });
+                ComboBox combo = GetDefaultCombobox(new string[] { " " });
 
                 selection_panel.Controls.Add(GetDefaultLabel("Phase"), 0, row);
                 selection_panel.Controls.Add(combo, 1, row);
@@ -111,11 +125,38 @@ namespace SSS_Prac_Launcher
             comboBox_subStage_sel.Items.Clear();
             if (comboBox_type_sel.SelectedIndex == 1)//boss
             {
-                comboBox_subStage_sel.Items.AddRange(new object[] {"normal 1","card 1","normal 2","card 2","normal 3","card 3","normal 4","card 4","card 5","card 6","LSC 1","LSC 2","LSC 3" });
+                switch(comboBox_stage_sel.SelectedIndex)
+                {
+                    default:
+                    case 0:
+                        ComboSetItems(comboBox_subStage_sel,
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "FSC" });
+                        break;
+                    case 1:
+                        ComboSetItems(comboBox_subStage_sel,
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "card 3", "FSC" });
+                        break;
+                    case 2:
+                        ComboSetItems(comboBox_subStage_sel,
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3" , "FSC" });
+                        break;
+                    case 3:
+                        ComboSetItems(comboBox_subStage_sel,
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "card 3", "card 4", "card 5",  "FSC" });
+                        break;
+                    case 4:
+                        ComboSetItems(comboBox_subStage_sel, 
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3", "card 4", "card 5", "FSC" });
+                        break;
+                    case 5:
+                        ComboSetItems(comboBox_subStage_sel, 
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3", "normal 4", "card 4", "card 5", "card 6", "FSC 1", "FSC 2", "FSC 3" });
+                    break;
+                }
             }
             else //road
             {
-                comboBox_subStage_sel.Items.AddRange(new object[] { "road 1" });
+                ComboSetItems(comboBox_subStage_sel, new string[] { "road 1" });
             }
             comboBox_subStage_sel.SelectedIndex = 0;
         }

@@ -18,37 +18,18 @@ namespace SSS_Prac_Launcher
         {
             return (MethodBase)(AccessTools.TypeByName("Shooting.Boss_Tensei01").GetMember(".ctor", AccessTools.all)[0]);
         }
-        //{"normal 1","card 1","normal 2","card 2","normal 3","card 3","normal 4","card 4","card 5","card 6"
+        //{"normal 1","card 1","normal 2","card 2","normal 3","card 3","normal 4","card 4","card 5","card 6"}
         public static void Postfix(BaseBoss __instance)
         {
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != 1)// not boss
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            var lifes = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1 ,1,1,1 };
-            var set_life = new bool[] { false, true, false, true, false, true, false, true, false, false, false, false, false };
-            var onspells = new bool[] { false, true, false, true, false, true, false, true, true, true, true, true, true };
+            var lifes    = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1, 1, 1, 1 };
+            var set_life = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0 };
+            var onspells = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1 };
             int id = PracSelection.comboBox_subStage_sel.SelectedIndex;
-            if (id <= lifes.Length && id >= 0)
-            {
-                if(id >= 10)//LSC
-                {
-                    __instance.Life = lifes[id];
-                    __instance.OnSpell = true;
-                    __instance.Time = 102;
-                    __instance.HealthPoint = 0;
-                }
-                else
-                {
-                    __instance.Life = lifes[id];
-                    __instance.OnSpell = onspells[id];
-                    if (set_life[id]) {
-                        __instance.HealthPoint = __instance.SpellcardHP;
-                        // __instance.Time = 0;
-                    }
-                }
-                
-            }
+            StagePatch.BossJump(__instance, lifes, set_life, onspells,10);
         }
     }
 
@@ -64,11 +45,11 @@ namespace SSS_Prac_Launcher
         {
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != 1)// not boss
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
             var lifes = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1,  3, 2, 1 };
             int id = PracSelection.comboBox_subStage_sel.SelectedIndex;
-            if (id <= lifes.Length && id >= 10)//LSC
+            if (id <= lifes.Length && id >= 10)//FSC
             {
                 __instance.Life = lifes[id];
             }
@@ -76,7 +57,7 @@ namespace SSS_Prac_Launcher
     }
 
     [HarmonyPatch]
-    class PatchLSC
+    class PatchFSC6
     {
         public static MethodBase TargetMethod()
         {
@@ -86,12 +67,11 @@ namespace SSS_Prac_Launcher
         {
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != 1)// not boss
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            if (PracSelection.comboBox_subStage_sel.SelectedIndex < 10)//not LSC
+            if (PracSelection.comboBox_subStage_sel.SelectedIndex < 10)//not FSC
                 return;
-            if(__instance.Time < __instance.LifeTime - 20)
-                __instance.Time = __instance.LifeTime - 20;
+            StagePatch.BossJump_FSC(__instance);
         }
     }
 
@@ -107,24 +87,9 @@ namespace SSS_Prac_Launcher
         {
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != 1)// not boss
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.Planes.Story.BaseStory_SSS"));
-            FieldInfo f_conv = null;
-            foreach (var field in type)
-            {
-                if (field.Name=="Conv")
-                {
-                    f_conv = field;
-                    break;
-                }
-            }
-            if (f_conv==null)
-                return;
-            IList lst = (IList)f_conv.GetValue(__instance);
-            __instance.Time = lst.Count;
-            __instance.StageData.ChangeBGM(".\\BGM\\Boss06.wav", 0, 0, 255, 1697409, 10789065);
+            StagePatch.JumpStory(__instance);
         }
     }
 
@@ -140,29 +105,10 @@ namespace SSS_Prac_Launcher
         {
             if (!PracSelection.is_Prac)
                 return;
-            if (PracSelection.comboBox_type_sel.SelectedIndex != 1)// not boss
-                return;
-
-            if (__instance == null)
-                return;
-            var type = AccessTools.GetDeclaredProperties(AccessTools.TypeByName("Shooting.BaseGameState"));
-            PropertyInfo f_timeMain = null;
-            foreach (var prop in type)
-            {
-                if (prop.Name == "TimeMain")
-                {
-                    f_timeMain = prop;
-                    break;
-                }
-            }
-            if (f_timeMain == null)
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
             //8400
-            int time = (int)(f_timeMain.GetValue(__instance,null));
-            if (time==8550-130)
-            {
-                f_timeMain.SetValue(__instance, 8549, null);
-            }
+            StagePatch.BeginBoss(__instance, 8550, 8400, () => { __instance.StageData.ChangeBGM(".\\BGM\\Boss06.wav", 0, 0, 255, 1697409, 10789065); });
         }
     }
 

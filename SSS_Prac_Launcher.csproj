@@ -67,7 +67,13 @@
     <Compile Include="Prac_Overlay_old.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stage1Patch.cs" />
+    <Compile Include="Stage2Patch.cs" />
+    <Compile Include="Stage3Patch.cs" />
+    <Compile Include="Stage4Patch.cs" />
+    <Compile Include="Stage5Patch.cs" />
     <Compile Include="Stage6Patch.cs" />
+    <Compile Include="StagePatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
