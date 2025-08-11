@@ -15,7 +15,7 @@ namespace SSS_Prac_Launcher
     public class PracSelection
     {
 
-        public static int[] n_FSC = new int[] { 4, 5, 6, 7, 8, 10, 18 };
+        public static int[] n_FSC = new int[] { 4, 5, 6, 7, 8, 13, 18 };
         public static int[] time_later = new int[] { 4000, 5000, 3800, 9999999, 3000, 999999, 5060 };
         public static int[] lifepeice_cnts = new int[] { 3, 5, 8, 10, 12, 15, 18, 20, 22 };
         public enum SelectedType {
@@ -647,7 +647,7 @@ namespace SSS_Prac_Launcher
                         break;
                     case 5:
                         ComboSetItems(comboBox_subStage_sel, 
-                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3", "normal 4", "card 4", "card 5", "card 6", "FSC 1", "FSC 2", "FSC 3" });
+                            new string[] { "normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3", "normal 4", "card 4", "card 5", "final phase1", "final phase2", "final phase3", "final phase4", "FSC 1", "FSC 2", "FSC 3" });
                         break;
                     case 6:
                         ComboSetItems(comboBox_subStage_sel,

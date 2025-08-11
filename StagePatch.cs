@@ -37,11 +37,12 @@ namespace SSS_Prac_Launcher
                     }
                     else
                     {
-                        if (onspells[id] == 1)
+                        if (onspells[id] == 1 && id != 0)
                         {
-                            //set_life==0 且 onspells==1 的情况下, 符卡独占一条血, 这个时候游戏在 T=100 时设置符卡时间
+                            // set_life==0 且 onspells==1 的情况下, 符卡独占一条血, 这个时候游戏在 T=100 时设置符卡时间
+                            // 但是咕灵灵是 T=90 时设置符卡
                             __instance.OnSpell = false;
-                            __instance.Time = 99;
+                            __instance.Time = 89;
                         }
                     }
                 }

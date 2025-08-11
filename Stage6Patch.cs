@@ -18,18 +18,22 @@ namespace SSS_Prac_Launcher
         {
             return (MethodBase)(AccessTools.TypeByName("Shooting.Boss_Tensei01").GetMember(".ctor", AccessTools.all)[0]);
         }
-        //{"normal 1","card 1","normal 2","card 2","normal 3","card 3","normal 4","card 4","card 5","card 6"}
+        //"normal 1", "card 1", "normal 2", "card 2", "normal 3", "card 3", "normal 4", "card 4", "card 5", "final phase1", "final phase2", "final phase3", "final phase4", "FSC 1", "FSC 2", "FSC 3"
         public static void Postfix(BaseBoss __instance)
         {
             if (!PracSelection.is_Prac)
                 return;
             if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            var lifes    = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1, 1, 1, 1 };
-            var set_life = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0 };
-            var onspells = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1 };
+            var lifes    = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1,1,1,1,      1, 1, 1 };
+            var set_life = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 0, 0,0,0,0,      0, 0, 0 };
+            var onspells = new int[] { 0, 1, 0, 1, 0, 1, 0, 1, 1, 1,1,1,1,      1, 1, 1 };
             int id = PracSelection.comboBox_subStage_sel.SelectedIndex;
-            StagePatch.BossJump(__instance, lifes, set_life, onspells,10);
+            StagePatch.BossJump(__instance, lifes, set_life, onspells, PracSelection.n_FSC[5]);
+            if(id>=9 && id<=12)//final spell
+            {
+                __instance.Boss.HealthPoint = __instance.Boss.MaxHP - (__instance.Boss.MaxHP)/4*(id-9);
+            }
         }
     }
 
@@ -47,12 +51,48 @@ namespace SSS_Prac_Launcher
                 return;
             if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
                 return;
-            var lifes = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1,  3, 2, 1 };
+            var lifes = new int[] { 6, 6, 5, 5, 4, 4, 3, 3, 2, 1, 1, 1, 1,  3, 2, 1 };
             int id = PracSelection.comboBox_subStage_sel.SelectedIndex;
-            if (id <= lifes.Length && id >= 10)//FSC
+            if (id <= lifes.Length && id >= 13)//FSC
             {
                 __instance.Life = lifes[id];
             }
+        }
+    }
+
+    [HarmonyPatch]
+    class PatchSpell6
+    {
+        public static MethodBase TargetMethod()
+        {
+            return AccessTools.Method("Shooting.SpellCard_SSS06_06:Shoot");
+        }
+        public static bool Prefix(BaseObject __instance)
+        {
+            if (!PracSelection.is_Prac)
+                return true;
+            if (PracSelection.comboBox_type_sel.SelectedIndex != (int)PracSelection.SelectedType.Boss)// not boss
+                return true;
+            int id = PracSelection.comboBox_subStage_sel.SelectedIndex;
+            if (id>=9 && id<=12)//final spell
+            {
+                if(id>=10)//not P1
+                {
+                    if(__instance.Time == 1)
+                    {
+                        var fflag = GetReflection.GetField("Shooting.SpellCard_SSS06_06", "flag");
+                        if (fflag != null)
+                        {
+                            fflag.SetValue(__instance, id - 9);
+                        }
+                    }
+                    else if (__instance.Time==150)
+                    {
+                        return false;//skip P1
+                    }
+                }
+            }
+            return true;
         }
     }
 

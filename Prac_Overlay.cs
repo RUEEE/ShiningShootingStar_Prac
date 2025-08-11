@@ -68,6 +68,10 @@ namespace SSS_Prac_Launcher
             { "FSC 1","FSC 1"},
             { "FSC 2","FSC 2"},
             { "FSC 3","FSC 3"},
+            { "final phase1","终符 一阶段"},
+            { "final phase2","终符 二阶段"},
+            { "final phase3","终符 三阶段"},
+            { "final phase4","终符 四阶段"},
         };
 
         public static void InsertLocaledName(string id,string name,string language = "cn")
@@ -265,7 +269,7 @@ namespace SSS_Prac_Launcher
 
             // dinput used
             PatchInput.actions_input_patch += () => {
-                if (wait_time>=10 &&  PatchInput.key_state!=null && PatchInput.key_state.IsPressed(keyCode) && label.Visible)
+                if (IsOverlayPenelOpen() && wait_time>=10 &&  PatchInput.key_state!=null && PatchInput.key_state.IsPressed(keyCode))
                 {
                     isActivated = !isActivated;
                     wait_time = 0;
