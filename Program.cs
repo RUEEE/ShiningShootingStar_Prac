@@ -56,7 +56,7 @@ namespace SSS_Prac_Launcher
             }
             try
             {
-                Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
+                // Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
                 {
                     bool flag;
                     new Mutex(false, "AA", out flag);
