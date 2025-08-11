@@ -110,7 +110,7 @@ namespace SSS_Prac_Launcher
                 }
                 else if (windsz == 5)
                 {
-                    __instance.Form_Main.ClientSize = new Size(1920, 1280);
+                    __instance.Form_Main.ClientSize = new Size(1920, 1440);
                 }
                 else if (windsz == 6)
                 {
@@ -274,7 +274,7 @@ namespace SSS_Prac_Launcher
                         break;
                     case 4:
                         sz++;
-                        __instance.Form_Main.ClientSize = new Size(1920, 1280);
+                        __instance.Form_Main.ClientSize = new Size(1920, 1440);
                         break;
                     case 5:
                         sz++;

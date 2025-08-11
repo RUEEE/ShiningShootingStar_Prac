@@ -4,10 +4,22 @@
 - release文件中提供了一版
 
 ## 功能:
-- 按backspace后, 注意这个游戏的backspace菜单是在右下角的
-+ 按F1 可以开无敌
-+ F2后切屏则不暂停
+- 按 **backspace** 后, 注意这个游戏的backspace菜单是在右下角的
++ **F1** 可以开无敌
++ **F2** 后可禁用X键
++ **F3** 后切屏则不暂停
 - 进入练习界面后可以选择从各种地方开始(甚至居然有ex，，，虽然道中只有前后半之分)
+- 更多分辨率
++ 在**Setting.INI**文件中**Mode**下的**WindowSize**设置
++ WindowSize = 0: 640x480
++ WindowSize = 1: 800x600
++ WindowSize = 2: 1024x768
++ WindowSize = 3: 1280x960
++ WindowSize = 4: 1440x1080
++ WindowSize = 5: 1920x1440
++ WindowSize = 6: 2560x1920
++ WindowSize = 7: 2880x2160
++ 在游戏中使用 **F8** 调节(不过ui会错位, 所以还是用文件调节吧，，，)
 - 剩下的还没做，，，
 
 ## 如何播放使用练习器的rep:
