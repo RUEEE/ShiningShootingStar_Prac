@@ -59,7 +59,7 @@ namespace SSS_Prac_Launcher
         public static List<Control> objs_selection = new List<Control>();
         public static int cur_selected_option = 0;
 
-        public static bool is_opened = false;
+        private static bool is_selection_panel_opened = false;
 
         public static void ShowCursor()
         {
@@ -90,10 +90,10 @@ namespace SSS_Prac_Launcher
         {
             if (!IsSelectionPanelOpen())
             {
-                if (PatchMainWind.main_panel != null)
+                if (PatchMainWind.overlay_panel != null)
                 {
-                    PatchMainWind.main_panel.Controls.Add(selection_panel);
-                    selection_panel.Location = new Point(PatchMainWind.main_panel.Width/2-selection_panel.Width/2, PatchMainWind.main_panel.Height/2-selection_panel.Height/2);
+                    PatchMainWind.overlay_panel.Controls.Add(selection_panel);
+                    selection_panel.Location = new Point(PatchMainWind.overlay_panel.Width/2-selection_panel.Width/2, PatchMainWind.overlay_panel.Height/2-selection_panel.Height/2);
                 }
                 else
                 {
@@ -105,18 +105,18 @@ namespace SSS_Prac_Launcher
             cur_selected_option = 0;
             UpdateSelectedOption();
             ShowCursor();
-            is_opened = true;
+            is_selection_panel_opened = true;
         }
 
         public static void SelectionPanelClose()
         {
             if (IsSelectionPanelOpen())
             {
-                if (PatchMainWind.main_panel!=null)
+                if (PatchMainWind.overlay_panel!=null)
                 {
-                    PatchMainWind.main_panel.Controls.Remove(selection_panel);
-                    PatchMainWind.main_panel.Select();
-                    PatchMainWind.main_panel.Focus();
+                    PatchMainWind.overlay_panel.Controls.Remove(selection_panel);
+                    PatchMainWind.overlay_panel.Select();
+                    PatchMainWind.overlay_panel.Focus();
                 }
                 else
                 {
@@ -127,12 +127,12 @@ namespace SSS_Prac_Launcher
             }
             key_wait_time = 0;
             HideCursor();
-            is_opened = false;
+            is_selection_panel_opened = false;
         }
 
         public static bool IsSelectionPanelOpen()
         {
-            return is_opened;
+            return is_selection_panel_opened;
             // if (PatchMainWind.main_panel!=null)
             // {
             //     return PatchMainWind.main_panel.Controls.Contains(selection_panel);
@@ -300,7 +300,26 @@ namespace SSS_Prac_Launcher
                 if (e.KeyData==Keys.Up || e.KeyData==Keys.Down)
                     e.Handled = true;
                 else
-                    e.Handled = false;
+                {
+                    if (e.KeyData==Keys.Left)
+                    {
+                        ComboBox cb = o as ComboBox;
+                        if(cb.SelectedIndex == 0){
+                            cb.SelectedIndex = cb.Items.Count - 1;
+                            e.Handled = true;
+                        }
+                    }else if (e.KeyData==Keys.Right)
+                    {
+                        ComboBox cb = o as ComboBox;
+                        if (cb.SelectedIndex == cb.Items.Count - 1)
+                        {
+                            cb.SelectedIndex = 0;
+                            e.Handled = true;
+                        }
+                    } else {
+                        e.Handled = false;
+                    }
+                }
             };
             combo.KeyUp+=(o, e) =>
             {

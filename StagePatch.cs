@@ -29,10 +29,20 @@ namespace SSS_Prac_Launcher
                 else
                 {
                     __instance.Life = lifes[id];
-                    __instance.OnSpell = (onspells[id] == 1);
+                    
                     if (set_life[id] == 1)
                     {
                         __instance.HealthPoint = __instance.SpellcardHP;
+                        __instance.OnSpell = (onspells[id] == 1);
+                    }
+                    else
+                    {
+                        if (onspells[id] == 1)
+                        {
+                            //set_life==0 且 onspells==1 的情况下, 符卡独占一条血, 这个时候游戏在 T=100 时设置符卡时间
+                            __instance.OnSpell = false;
+                            __instance.Time = 99;
+                        }
                     }
                 }
 
@@ -90,10 +100,10 @@ namespace SSS_Prac_Launcher
 
         public static void RecordTimes(IGameState __instance)
         {
+            return;
             var t = GetTimeMain(__instance);
             if(t != null)
                 Prac_Hotkey.label_drama_frame.Text = $"frame: {(int)(GetTimeMain(__instance).GetValue(__instance, null))}";
-            return;
         }
         public static void RoadJump(IGameState __instance, PropertyInfo p_timeMain)
         {

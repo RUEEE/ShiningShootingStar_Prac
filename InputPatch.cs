@@ -76,7 +76,14 @@ namespace SSS_Prac_Launcher
             KClass.ArrowDown = __instance.currentKeyboardState.IsPressed(Key.DownArrow);
             KClass.Key_Shift = __instance.currentKeyboardState.IsPressed(Key.LeftShift);
             KClass.Key_Z = (__instance.currentKeyboardState.IsPressed(Key.Z) | __instance.currentKeyboardState.IsPressed(Key.Return));
-            KClass.Key_X = __instance.currentKeyboardState.IsPressed(Key.X);
+            if(OverLayPatches.is_disable_X)
+            {
+                KClass.Key_X = false;
+            }
+            else
+            {
+                KClass.Key_X = __instance.currentKeyboardState.IsPressed(Key.X);
+            }
             KClass.Key_C = __instance.currentKeyboardState.IsPressed(Key.R);
             KClass.Key_Ctrl = __instance.currentKeyboardState.IsPressed(Key.LeftControl);
             KClass.Key_ESC = __instance.currentKeyboardState.IsPressed(Key.Escape);
@@ -86,7 +93,7 @@ namespace SSS_Prac_Launcher
             KClass.Key_minus |= KClass.Key_Shift;
 
             key_state = keyboard.GetCurrentState();
-            actions_input_patch();
+            actions_input_patch?.Invoke();
             return false;
         }
     }

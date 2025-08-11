@@ -1,5 +1,7 @@
 - 直接放入游戏文件夹下后打开 SSS_Prac_Launcher.exe
-- 游戏版本需要为1.01版, 这里提供了一版(理论上1.0.0可能也能用)
+- 游戏版本需要为1.01版(https://www.bilibili.com/video/BV1seM4zWECM/)
+- (理论上1.0.0可能也能用←Assembly Version改了 用不了 遗憾，，，)
+- release文件中提供了一版
 
 ## 功能:
 - 按backspace后, 注意这个游戏的backspace菜单是在右下角的
@@ -20,5 +22,10 @@
 **https://github.com/RUEEE/ShiningShootingStar_Prac**
 
 
+## 25.08.11
+- 修复了部分符卡时间错误
+- 加入了禁用X键的功能
+- 原来1.01版本还有个settings.ini文件，，，修复了没这个文件下无法启动的bug
+- 修改了点配色之类的玩意
 
 **蓝狗降临仪式**
