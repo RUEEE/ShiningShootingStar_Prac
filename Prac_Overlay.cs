@@ -145,11 +145,12 @@ namespace SSS_Prac_Launcher
                 else
                 {
                     PatchMainWind.main_form.Controls.Add(overlay_panel);
-                    x_overlay = (int)((float)PatchMainWind.main_form.Width*0.75f);
-                    y_overlay = (int)((float)PatchMainWind.main_form.Height*0.6f);
+                    x_overlay = (int)((float)PatchMainWind.main_form.Width * 0.7f);
+                    y_overlay = (int)((float)PatchMainWind.main_form.Height * 0.6f);
                 }
             }
             overlay_panel.Location = new Point(x_overlay, y_overlay);
+            overlay_panel.Padding = new Padding(3, 3, 3, 3);
             is_overlay_panel_open = true;
             wait_time_overlay = 0;
         }
@@ -171,21 +172,21 @@ namespace SSS_Prac_Launcher
                 label_version.Location = new Point(0, y_label);
                 label_version.AutoSize = true;
                 label_version.ForeColor = Color.AliceBlue;
-                y_label += label_version.Height + 3;
+                y_label += PatchMainWind.form_font_regular.Height + 3;
                 labels_test.Add(label_version);
 
                 // label_drama_frame = PracSelection.GetDefaultLabel("frame: 0");
                 // label_drama_frame.Location = new Point(0, y_label);
                 // label_drama_frame.AutoSize = true;
                 // label_drama_frame.ForeColor = Color.Wheat;
-                // y_label += label_drama_frame.Height + 3;
+                // y_label += PatchMainWind.form_font_regular.Height  + 3;
                 // labels_test.Add(label_drama_frame);
 
                 label_is_prac = PracSelection.GetDefaultLabel($"is_prac: {PracSelection.is_Prac}");
                 label_is_prac.Location = new Point(0, y_label);
                 label_is_prac.AutoSize = true;
                 label_is_prac.ForeColor = Color.Wheat;
-                y_label += label_is_prac.Height + 3;
+                y_label += PatchMainWind.form_font_regular.Height + 3;
                 labels_test.Add(label_is_prac);
                 y_label += 5;
             }
@@ -260,7 +261,7 @@ namespace SSS_Prac_Launcher
 
             hotKeyDelegate = d;
             hotKey_dinput = keyCode;
-            y_label += label.Height + 3;
+            y_label += PatchMainWind.form_font_regular.Height + 3;
 
             // dinput used
             PatchInput.actions_input_patch += () => {

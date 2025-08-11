@@ -67,16 +67,7 @@ namespace SSS_Prac_Launcher
         }
         public static void HideCursor()
         {
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.Game_Main"));
-            FieldInfo fw = null;
-            foreach (var field in type)
-            {
-                if (field.Name == "fullWindow")
-                {
-                    fw = field;
-                    break;
-                }
-            }
+            FieldInfo fw = GetReflection.GetField("Shooting.Game_Main","fullWindow");
             if((bool)fw.GetValue(Launcher.game_Main))
             {
                 Shooting.MouseCtrl.DrawCursor(false);
@@ -228,7 +219,7 @@ namespace SSS_Prac_Launcher
             nb.Font = PatchMainWind.form_font_regular;
             nb.ForeColor = Color.Black;
             nb.BackColor = Color.White;
-            nb.ClientSize = new Size(nb.ClientSize.Height * 10, nb.ClientSize.Height);
+            nb.ClientSize = new Size(PatchMainWind.form_font_regular.Height * 12, nb.ClientSize.Height);
 
             nb.Minimum = min;
             nb.Maximum = max;
@@ -280,6 +271,7 @@ namespace SSS_Prac_Launcher
             lb.ForeColor = Color.Black;
             lb.BackColor = Color.Transparent;
             lb.AutoSize = true;
+            lb.MinimumSize = new Size(PatchMainWind.form_font_regular.Height * 8, lb.Height);
             return lb;
         }
         public static ComboBox GetDefaultCombobox(string[] items)
@@ -294,7 +286,7 @@ namespace SSS_Prac_Launcher
             combo.ForeColor = Color.Black;
             combo.BackColor = Color.White;
             combo.DropDownStyle = ComboBoxStyle.DropDownList;
-            combo.ClientSize = new Size(combo.ClientSize.Height * 12, combo.ClientSize.Height);
+            combo.ClientSize = new Size(PatchMainWind.form_font_regular.Height * 12, combo.ClientSize.Height);
             combo.KeyDown += (o, e) =>
             {
                 if (e.KeyData==Keys.Up || e.KeyData==Keys.Down)
@@ -349,14 +341,14 @@ namespace SSS_Prac_Launcher
             InitRoadDefine();
 
             selection_panel = new TableLayoutPanel();
-            selection_panel.AutoSize=true;
-            selection_panel.AutoSizeMode=AutoSizeMode.GrowAndShrink;
+            selection_panel.AutoSize = true;
+            selection_panel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             selection_panel.ForeColor = Color.AntiqueWhite;
             selection_panel.BackColor = Color.AntiqueWhite;
             selection_panel.Padding = new Padding(10, 10, 10, 10);
 
             selection_panel.ColumnCount = 2;
-            selection_panel.RowCount = 10;
+            selection_panel.RowCount = 16;
 
             PatchMainWind.main_form.KeyDown += (o, e) =>
             {
@@ -600,6 +592,8 @@ namespace SSS_Prac_Launcher
             Update();
             UpdateSelectedOption();
             PatchRender.actions_render_patch += Update;
+
+            selection_panel.Update();
         }
 
         public static void ComboChange_Stage_Type(object sender, EventArgs e)
@@ -823,16 +817,7 @@ namespace SSS_Prac_Launcher
         }
         public static bool Prefix(Shooting.BaseMenuGroup __instance)
         {
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.MenuGroup_PlayerSelect"));
-            FieldInfo ff = null;
-            foreach (var field in type)
-            {
-                if (field.Name=="StageSelect")
-                {
-                    ff = field;
-                    break;
-                }
-            }
+            FieldInfo ff = GetReflection.GetField("Shooting.MenuGroup_PlayerSelect", "StageSelect");
             if (ff == null)
                 return true;
             bool stageselect = (bool)ff.GetValue(__instance);

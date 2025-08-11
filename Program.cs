@@ -33,7 +33,7 @@ namespace SSS_Prac_Launcher
         static void Main(string[] args)
         {
             bool show_cmd = false;
-            for(int i=0;i<args.Length; i++)
+            for (int i = 0; i<args.Length; i++)
             {
                 if (args[i]=="-c" || args[i]=="-C")
                     show_cmd = true;
@@ -47,7 +47,7 @@ namespace SSS_Prac_Launcher
                 var x = harmony.GetPatchedMethods();
                 foreach (var i in x)
                 {
-                    Console.WriteLine($"Patched: {i.ReflectedType.FullName}:{i.Name}");  
+                    Console.WriteLine($"Patched: {i.ReflectedType.FullName}:{i.Name}");
                 }
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace SSS_Prac_Launcher
             }
             try
             {
-                // Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
+                Directory.SetCurrentDirectory(@"C:\disk\touhou\2nd\SSS\SSS\");
                 {
                     bool flag;
                     new Mutex(false, "AA", out flag);
@@ -82,7 +82,7 @@ namespace SSS_Prac_Launcher
                 MessageBox.Show($"Launch Error:{ex.StackTrace}\n{ex.Message}");
             }
         }
-        
+
     }
 
     [HarmonyPatch]
@@ -99,16 +99,32 @@ namespace SSS_Prac_Launcher
         }
         public static void Postfix(Shooting.Game_Main __instance)
         {
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.RenderForm_Main"));
-            FieldInfo f_panel = null;
-            foreach (var field in type)
+            // Shooting.Game_Main:Direct3DInit is used after setting the window size
+            var windSz = GetReflection.GetField("Shooting.Game_Main", "windowSize");
+            int windsz = (int)windSz.GetValue(__instance);
+            if(windsz >=4 )
             {
-                if (field.Name=="panel1")
+                if (windsz == 4)
                 {
-                    f_panel = field;
-                    break;
+                    __instance.Form_Main.ClientSize = new Size(1440, 1080);
                 }
+                else if (windsz == 5)
+                {
+                    __instance.Form_Main.ClientSize = new Size(1920, 1280);
+                }
+                else if (windsz == 6)
+                {
+                    __instance.Form_Main.ClientSize = new Size(2560, 1920);
+                }
+                else if (windsz == 7)
+                {
+                    __instance.Form_Main.ClientSize = new Size(2880, 2160);
+                }
+                __instance.Form_Main.Refresh();
             }
+            
+
+            FieldInfo f_panel = GetReflection.GetField("Shooting.RenderForm_Main", "panel1");
             Panel panel = (Panel)f_panel.GetValue(__instance.Form_Main);
             main_form = __instance.Form_Main;
             overlay_panel = panel;
@@ -118,7 +134,7 @@ namespace SSS_Prac_Launcher
             int fontsize = (int)(main_form.Font.Size*sz);
             form_font_regular = new System.Drawing.Font(main_form.Font.Name, fontsize, FontStyle.Regular);
             form_font_italian = new System.Drawing.Font(main_form.Font.Name, fontsize, FontStyle.Italic);
-            form_font_bold_u = new System.Drawing.Font(main_form.Font.Name, fontsize,  FontStyle.Underline | FontStyle.Bold);
+            form_font_bold_u = new System.Drawing.Font(main_form.Font.Name, fontsize, FontStyle.Underline | FontStyle.Bold);
             Prac_Hotkey.Init();
             PracSelection.Init();
         }
@@ -131,7 +147,8 @@ namespace SSS_Prac_Launcher
         public static MySprite game_sprite;
         public static SlimDX.Direct3D9.Device game_device;
         public static Action actions_render_patch;
-        public static void Init(SlimDX.Direct3D9.Device device){
+        public static void Init(SlimDX.Direct3D9.Device device)
+        {
             if (!is_inited)
             {
                 game_sprite = new MySprite(device);
@@ -165,6 +182,129 @@ namespace SSS_Prac_Launcher
         }
     }
 
+    public class GetReflection
+    {
+        public static FieldInfo GetField(string typename, string name)
+        {
+            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName(typename));
+            foreach (var field in type)
+            {
+                if (field.Name == name)
+                {
+                    return field;
+                }
+            }
+            return null;
+        }
 
+        public static MethodInfo GetMethod(string typename, string name)
+        {
+            var type = AccessTools.GetDeclaredMethods(AccessTools.TypeByName(typename));
+            foreach (var method in type)
+            {
+                if (method.Name == name)
+                {
+                    return method;
+                }
+            }
+            return null;
+        }
 
+        public static PropertyInfo GetProperty(string typename, string name)
+        {
+            var type = AccessTools.GetDeclaredProperties(AccessTools.TypeByName(typename));
+            foreach (var prop in type)
+            {
+                if (prop.Name == name)
+                {
+                    return prop;
+                }
+            }
+            return null;
+        }
+    }
+
+    [HarmonyPatch]
+    public class PatchWindowSize
+    {
+
+        public static MethodBase TargetMethod()
+        {
+            return AccessTools.Method("Shooting.Game_Main:WindowSwitch");
+        }
+
+        public static bool Prefix(Game_Main __instance)
+        {
+            var full_wind = GetReflection.GetField("Shooting.Game_Main", "fullWindow");
+            var windSz = GetReflection.GetField("Shooting.Game_Main", "windowSize");
+            var ToggleUnrealFullScreen = GetReflection.GetMethod("Shooting.Game_Main", "ToggleUnrealFullScreen");
+            var ToggleFullScreen = GetReflection.GetMethod("Shooting.Game_Main", "ToggleFullScreen");
+            if ((bool)full_wind.GetValue(__instance))
+            {
+                if (Game_Main.useUnrealFullScreen)
+                {
+                    ToggleUnrealFullScreen.Invoke(__instance, null);
+                }
+                else
+                {
+                    ToggleFullScreen.Invoke(__instance, null);
+                    __instance.Form_Main.ClientSize = new Size(640, 480);
+                }
+            }
+            else
+            {
+                int sz = (int)windSz.GetValue(__instance);
+                switch (sz)
+                {
+                    case 0:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(800, 600);
+                        break;
+                    case 1:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(1024, 768);
+                        break;
+                    case 2:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(1280, 960);
+                        break;
+                    case 3:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(1440, 1080);
+                        break;
+                    case 4:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(1920, 1280);
+                        break;
+                    case 5:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(2560, 1920);
+                        break;
+                    case 6:
+                        sz++;
+                        __instance.Form_Main.ClientSize = new Size(2880, 2160);
+                        break;
+                    case 7:
+                        // disable toggle fullscreen
+                        // sz = 0;
+                        // if (Game_Main.useUnrealFullScreen)
+                        // {
+                        //     ToggleUnrealFullScreen.Invoke(__instance, null);
+                        // }
+                        // else
+                        // {
+                        //     ToggleFullScreen.Invoke(__instance, null);
+                        // }
+                        // break;
+                    default:
+                        sz = 0;
+                        __instance.Form_Main.ClientSize = new Size(640, 480);
+                        break;
+                }
+                windSz.SetValue(__instance, sz);
+            }
+            __instance.Form_Main.Refresh();
+            return false;
+        }
+    }
 }

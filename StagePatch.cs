@@ -55,16 +55,7 @@ namespace SSS_Prac_Launcher
         }
         public static void JumpStory(BaseStory __instance)
         {
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.Planes.Story.BaseStory_SSS"));
-            FieldInfo f_conv = null;
-            foreach (var field in type)
-            {
-                if (field.Name=="Conv")
-                {
-                    f_conv = field;
-                    break;
-                }
-            }
+            FieldInfo f_conv = GetReflection.GetField("Shooting.Planes.Story.BaseStory_SSS","Conv");
             if (f_conv==null)
                 return;
             IList lst = (IList)f_conv.GetValue(__instance);
@@ -79,16 +70,7 @@ namespace SSS_Prac_Launcher
             if (__instance == last_inst && last_info_p_timeMain != null)// reflection is slow
                 return last_info_p_timeMain;
             last_inst = __instance;
-            var type = AccessTools.GetDeclaredProperties(AccessTools.TypeByName("Shooting.BaseGameState"));
-            PropertyInfo p_timeMain = null;
-            foreach (var prop in type)
-            {
-                if (prop.Name == "TimeMain")
-                {
-                    p_timeMain = prop;
-                    break;
-                }
-            }
+            PropertyInfo p_timeMain = GetReflection.GetProperty("Shooting.BaseGameState","TimeMain");
             last_info_p_timeMain = p_timeMain;
             return p_timeMain;
         }
@@ -174,16 +156,7 @@ namespace SSS_Prac_Launcher
                 int stage = PracSelection.comboBox_stage_sel.SelectedIndex;
                 if (stage>=0 && stage<=6 && PracSelection.comboBox_subStage_sel.SelectedIndex == PracSelection.n_FSC[stage])
                 {
-                    var type = AccessTools.GetDeclaredProperties(AccessTools.TypeByName("Shooting.BaseGameState"));
-                    PropertyInfo p_base_my_plane = null;
-                    foreach (var prop in type)
-                    {
-                        if (prop.Name == "MyPlane")
-                        {
-                            p_base_my_plane = prop;
-                            break;
-                        }
-                    }
+                    PropertyInfo p_base_my_plane = GetReflection.GetProperty("Shooting.BaseGameState", "MyPlane");
                     if (p_base_my_plane != null)
                     {
                         var bmp = (BaseMyPlane)p_base_my_plane.GetValue(__instance, null);

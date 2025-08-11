@@ -43,16 +43,7 @@ namespace SSS_Prac_Launcher
         {
             if(keyboard == null)
             {
-                FieldInfo f_kb = null;
-                var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.KeyboardCapture"));
-                foreach (var f in type)
-                {
-                    if (f.Name == "keyboard")
-                    {
-                        f_kb = f;
-                        break;
-                    }
-                }
+                FieldInfo f_kb = GetReflection.GetField("Shooting.KeyboardCapture", "keyboard");
                 keyboard = (Keyboard)f_kb.GetValue(__instance);
             }
             
@@ -124,20 +115,8 @@ namespace SSS_Prac_Launcher
             }
             keyboard.Acquire();
         
-            var type = AccessTools.GetDeclaredFields(AccessTools.TypeByName("Shooting.KeyboardCapture"));
-            FieldInfo f_kb = null;
-            foreach (var f in type)
-            {
-                if (f.Name == "keyboard")
-                {
-                    f_kb = f;
-                    break;
-                }
-            }
-            if (f_kb != null)
-            {
-                f_kb.SetValue(__instance, keyboard);
-            }
+            FieldInfo f_kb = GetReflection.GetField("Shooting.KeyboardCapture","keyboard");
+            f_kb?.SetValue(__instance, keyboard);
             return false;
         }
     }
