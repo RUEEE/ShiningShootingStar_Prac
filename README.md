@@ -30,7 +30,7 @@
 ## 已知bug(特性(确信)):
 - 为了保证某些东西, 这里强制使用DirectInput输入, 所以没法改键了
 
-##代码:
+## 代码:
 **https://github.com/RUEEE/ShiningShootingStar_Prac**
 
 
