@@ -33,6 +33,11 @@
 ## 代码:
 **https://github.com/RUEEE/ShiningShootingStar_Prac**
 
+## 25.8.14
+- (1.0.3.0)修复re的时候资源修改失效
+- 加入得分倍率的设置
+- 在backspace菜单中加入倍率与结界百分比监测
+
 
 ## 25.08.11
 - (1.0.2.0)修复咕灵灵bug, 给终符加了阶段

@@ -42,8 +42,10 @@ namespace SSS_Prac_Launcher
         public static NumericUpDown numBox_graze;
         
         public static NumericUpDown numBox_score;
+
         
         public static NumericUpDown numBox_border_percent;
+        public static NumericUpDown numBox_rate;
         public static ComboBox comboBox_color;
 
         public static Button btn_apply;
@@ -262,11 +264,11 @@ namespace SSS_Prac_Launcher
             btn.AutoSize = true;
             return btn;
         }
-        public static Label GetDefaultLabel(string text)
+        public static Label GetDefaultLabel(string text, bool is_locale=true)
         {
             
             Label lb = new Label();
-            lb.Text = LocaleName.GetLocaledName(text);
+            lb.Text = is_locale ? LocaleName.GetLocaledName(text):text;
             lb.Font = PatchMainWind.form_font_regular;
             lb.ForeColor = Color.Black;
             lb.BackColor = Color.Transparent;
@@ -335,6 +337,7 @@ namespace SSS_Prac_Launcher
             plane.Graze = (int)numBox_graze.Value;
             plane.StarPoint = (int)((float)numBox_border_percent.Value/100.0f*3000.0f);
             plane.LastColor = (EnchantmentType)(comboBox_color.SelectedIndex + 1);
+            plane.Rate = ((int)numBox_rate.Value)/10.0f;
         }
         public static void Init()
         {
@@ -519,10 +522,20 @@ namespace SSS_Prac_Launcher
             }
             {
                 NumericUpDown nb = GetDefaultNumBox(0, 100, 0);
-                Label lb = GetDefaultLabel("BorderPercnt");
+                Label lb = GetDefaultLabel("BorderPercent");
                 selection_panel.Controls.Add(lb, 0, row);
                 selection_panel.Controls.Add(nb, 1, row);
                 numBox_border_percent = nb;
+                lbs_selection.Add(lb);
+                objs_selection.Add(nb);
+                row++;
+            }
+            {
+                NumericUpDown nb = GetDefaultNumBox(0, 100000, 0);
+                Label lb = GetDefaultLabel("border_rate");
+                selection_panel.Controls.Add(lb, 0, row);
+                selection_panel.Controls.Add(nb, 1, row);
+                numBox_rate = nb;
                 lbs_selection.Add(lb);
                 objs_selection.Add(nb);
                 row++;
@@ -903,6 +916,81 @@ namespace SSS_Prac_Launcher
                 PracSelection.is_Prac = false;
             }
             return;
+        }
+    }
+
+    [HarmonyPatch]
+    public class PatchRestart
+    {
+        public static MethodBase TargetMethod()
+        {
+            return AccessTools.Method("Shooting.MenuGroup_GameOver:ProcessZ");
+        }
+        public static bool Prefix(Shooting.BaseMenuGroup __instance)
+        {
+            string name = __instance.MenuItemList[__instance.MenuSelectIndex].Name;
+            if (name!="Menu_从头开始" || PracSelection.is_Prac!=true)
+                return true;
+
+            bool onReplay = __instance.StageData.GlobalData.LastState.StageData.OnReplay;
+            bool onPractice = __instance.StageData.GlobalData.LastState.StageData.OnPractice;
+            ReplayInfo repInfo = __instance.StageData.GlobalData.LastState.StageData.RepInfo;
+            __instance.StageData.StateSwitchData = new StateSwitchDataPackage
+            {
+                NextState = __instance.StageData.GlobalData.LastState.StageData.RepInfo.StartStage,
+                NeedInit = true,
+                SDPswitch = new StageDataPackage(__instance.StageData.GlobalData)
+                {
+                    Difficulty = repInfo.Rank,
+                    OnReplay = onReplay
+                }
+            };
+            int num = 0;
+            Point point = new Point(192, 398);
+            if (num >= 0)
+            {
+                point = new Point((int)repInfo.MyPlaneData[num].PosX, (int)repInfo.MyPlaneData[num].PosY);
+            }
+            string myPlaneName = repInfo.MyPlaneName;
+            BaseMyPlane baseMyPlane;
+            switch (myPlaneName)
+            {
+                default:
+                case "Reimu":
+                    baseMyPlane = new MyPlane_Reimu(__instance.StageData.StateSwitchData.SDPswitch, point);
+                    break;
+                case "Sanae":
+                    baseMyPlane = new MyPlane_Sanae(__instance.StageData.StateSwitchData.SDPswitch, point);
+                    break;
+                case "Marisa":
+                    baseMyPlane = new MyPlane_Marisa(__instance.StageData.StateSwitchData.SDPswitch, point);
+                    break;
+                case "Koishi":
+                    baseMyPlane = new MyPlane_Koishi(__instance.StageData.StateSwitchData.SDPswitch, point);
+                    break;
+                case "Aya":
+                    baseMyPlane = new MyPlane_Aya(__instance.StageData.StateSwitchData.SDPswitch, point);
+                    break;
+            }
+            PracSelection.InitValues(baseMyPlane);
+            __instance.StageData.StateSwitchData.SDPswitch.MyPlane = baseMyPlane;
+            __instance.StageData.StateSwitchData.SDPswitch.OnPractice = onPractice;
+            if (!onReplay)
+            {
+                __instance.StageData.Rep.Dispose();
+                __instance.StageData.Rep.CreatRpy();
+            }
+            else
+            {
+                __instance.StageData.Rep.DataPosition = 0L;
+            }
+            if (!onReplay)
+            {
+                __instance.StageData.StateSwitchData.SDPswitch.SetReplayInfo(__instance.StageData.StateSwitchData.NextState);
+                return false;
+            }
+            __instance.StageData.StateSwitchData.SDPswitch.RepInfo = repInfo;
+            return false;
         }
     }
 }

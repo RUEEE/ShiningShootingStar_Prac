@@ -34,8 +34,12 @@ namespace SSS_Prac_Launcher
             { "Power","灵力"},
             { "Dian","最大得点"},
             { "Graze","擦弹"},
-            { "BorderPercnt","结界百分比"},
+            { "BorderPercent","结界百分比"},
+            { "border_rate","结界得分倍率"},
             { "Score","分数(无个位)"},
+
+            { "lb_border_percent","结界百分比"},
+            { "lb_border_rate","结界倍率"},
 
             { "Color","结界颜色"},
             { "Red","红"},
@@ -106,6 +110,8 @@ namespace SSS_Prac_Launcher
         public static Label label_version;
         public static Label label_drama_frame;
         public static Label label_is_prac;
+        public static Label label_border_percent;
+        public static Label label_border_rate;
 
         static int y_overlay = 10;
         static int x_overlay = 10;
@@ -192,6 +198,22 @@ namespace SSS_Prac_Launcher
                 label_is_prac.ForeColor = Color.Wheat;
                 y_label += PatchMainWind.form_font_regular.Height + 3;
                 labels_test.Add(label_is_prac);
+
+                label_border_percent = PracSelection.GetDefaultLabel($"{LocaleName.GetLocaledName("lb_border_percent")}: 0%",false);
+                label_border_percent.Location = new Point(0, y_label);
+                label_border_percent.AutoSize = true;
+                label_border_percent.ForeColor = Color.Coral;
+                y_label += PatchMainWind.form_font_regular.Height + 3;
+                labels_test.Add(label_border_percent);
+
+                label_border_rate = PracSelection.GetDefaultLabel($"{LocaleName.GetLocaledName("lb_border_rate")}: 0", false);
+                label_border_rate.Location = new Point(0, y_label);
+                label_border_rate.AutoSize = true;
+                label_border_rate.ForeColor = Color.Coral;
+                y_label += PatchMainWind.form_font_regular.Height + 3;
+                labels_test.Add(label_border_rate);
+
+
                 y_label += 5;
             }
             hotkeys.Add(new Prac_Hotkey(SlimDX.DirectInput.Key.F1,Keys.F1, "F1", "Invincable", (bool s) => { OverLayPatches.is_invincable = s; }, Color.Snow));
@@ -335,6 +357,21 @@ namespace SSS_Prac_Launcher
             if (OverLayPatches.is_disable_pause)
                 return false;
             return true;
+        }
+    }
+
+
+    [HarmonyPatch]
+    class PatchPlaneUpdate
+    {
+        public static MethodBase TargetMethod()
+        {
+            return AccessTools.Method("Shooting.BaseMyPlane:Ctrl");
+        }
+        public static void Prefix(Shooting.BaseMyPlane __instance)
+        {
+            Prac_Hotkey.label_border_percent.Text=$"{LocaleName.GetLocaledName("lb_border_percent")}: {Math.Round(__instance.StarPoint/3000.0f*100.0f)}%";
+            Prac_Hotkey.label_border_rate.Text=$"{LocaleName.GetLocaledName("lb_border_rate")}: {__instance.Rate*10}";
         }
     }
 }
